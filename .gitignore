@@ -1,1 +1,5 @@
 *.pgn
+datasets
+logs
+models
+__pycache__
