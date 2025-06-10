@@ -4,7 +4,6 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 import torch.optim as optim
 import torch.nn as nn
-import torch.nn.functional as F
 
 import model as m
 import chess_funcs as cf
@@ -13,14 +12,17 @@ import data_setup as ds
 BATCH_SIZE = 64
 EPOCHS = 500
 LEARNING_RATE = 0.001
-INVALID_PENALTY = 10
+INVALID_PENALTY = 5
+VALID_REWARD = 1
 
 USE_PLAYER_DATASET = False
 PLAYER_DATASET = "datasets/stella.csv"
 
+DATASET_SIZE = 25000
+
 OUTPUT = "models/lichess.pth"
 LOAD_FROM = "models/lichess.pth"
-LOAD = True
+LOAD = False
 
 AUTOSAVE_INTERVAL = 100
 LOG_INTERVAL = 10
@@ -79,19 +81,22 @@ def train_model(model, dataloader, optimizer, epochs=EPOCHS):
             # Compute predicted moves
             preds = torch.stack([torch.argmax(o, dim=1) for o in outputs], dim=1)  # shape: [batch_size, 4]
 
-            # Penalty for invalid moves
+            # Penalty and reward calculations
             batch_penalty = 0.0
+            batch_reward = 0.0
             for i in range(xb.size(0)):
                 board = xb[i].cpu().numpy()
                 move = [int(min(max(x, 0), 7)) for x in preds[i].cpu().tolist()]
                 total_moves += 1
-                if cf.checkValid(board, move):
+                if cf.checkValid(board, move)[0]:
                     valid_moves_count += 1
+                    batch_reward += VALID_REWARD
                 else:
                     batch_penalty += INVALID_PENALTY
 
             penalty = batch_penalty / xb.size(0)
-            loss += penalty
+            reward = batch_reward / xb.size(0)
+            loss = loss + penalty - reward
 
             loss.backward()
             optimizer.step()
@@ -109,9 +114,9 @@ def train_model(model, dataloader, optimizer, epochs=EPOCHS):
             log.append([epoch, avg_loss, avg_acc, valid_rate])
 
         if epoch % AUTOSAVE_INTERVAL == 0:
-            print(f"Final model saved to {OUTPUT}")
+            print(f"Model autosaved to {OUTPUT}")
             torch.save(model.state_dict(), OUTPUT)
-    
+
     with open(LOG_FILE, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Epoch", "Loss", "Accuracy", "ValidRate"])  # Header
@@ -119,8 +124,8 @@ def train_model(model, dataloader, optimizer, epochs=EPOCHS):
             writer.writerow(row)
 
     print(f"Training log saved to {LOG_FILE}")
-
     return model
+
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -138,7 +143,7 @@ def main():
         dataset = TensorDataset(inputs, outputs)
         dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
     else:
-        data = ds.load_training_pairs_from_games(ds.FILE, ds.convertModuletoArray, 25000)
+        data = ds.load_training_pairs_from_games(ds.FILE, ds.convertModuletoArray, DATASET_SIZE)
         inputs = torch.tensor([pair[0] for pair in data], dtype=torch.float32)
         outputs = torch.tensor([pair[1] for pair in data], dtype=torch.long)
 

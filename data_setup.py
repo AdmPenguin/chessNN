@@ -106,19 +106,7 @@ def move_to_label(move):
     y_to, x_to = square_to_coords(to_sq)
     return [y_from, x_from, y_to, x_to]
 
-def load_training_pairs_from_games(pgn_file_path, convertModuletoArray, n=100):
-    """
-    Loads the first `n` games from PGN, extracts (input_array, label) from
-    a random move in each game, and returns a list of training pairs.
-
-    Args:
-        pgn_file_path (str): Path to PGN file.
-        convertModuletoArray (function): Converts a board to array.
-        n (int): Number of games to process.
-
-    Returns:
-        list of tuples: Each tuple is (input_array, label).
-    """
+def load_training_pairs_from_games(pgn_file_path, convertModuletoArray, n = 100):
     training_pairs = []
 
     with open(pgn_file_path) as pgn_file:
@@ -129,7 +117,7 @@ def load_training_pairs_from_games(pgn_file_path, convertModuletoArray, n=100):
 
             moves = list(game.mainline_moves())
             if len(moves) < 2:
-                continue  # Need at least 1 board + 1 label
+                continue
 
             # Choose a random valid move index
             move_index = random.randint(1, len(moves) - 1)

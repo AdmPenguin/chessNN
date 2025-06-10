@@ -151,7 +151,6 @@ def main_nocheck():
 
 if __name__ == "__main__":
     mode = input("Mode: ")
-
     if mode == "1":
         main()
     if mode == "2":
