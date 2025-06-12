@@ -11,14 +11,16 @@ import data_setup as ds
 
 BATCH_SIZE = 64
 EPOCHS = 500
-LEARNING_RATE = 0.001
-INVALID_PENALTY = 5
-VALID_REWARD = 1
+LEARNING_RATE = 0.003
+INVALID_PENALTY = 7
+VALID_REWARD = 2
+
+SEED = 420
 
 USE_PLAYER_DATASET = False
 PLAYER_DATASET = "datasets/stella.csv"
 
-DATASET_SIZE = 25000
+DATASET_SIZE = 50000
 
 OUTPUT = "models/lichess.pth"
 LOAD_FROM = "models/lichess.pth"
@@ -143,7 +145,7 @@ def main():
         dataset = TensorDataset(inputs, outputs)
         dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
     else:
-        data = ds.load_training_pairs_from_games(ds.FILE, ds.convertModuletoArray, DATASET_SIZE)
+        data = ds.load_training_pairs_from_games(ds.FILE, ds.convertModuletoArray, DATASET_SIZE, seed = SEED)
         inputs = torch.tensor([pair[0] for pair in data], dtype=torch.float32)
         outputs = torch.tensor([pair[1] for pair in data], dtype=torch.long)
 

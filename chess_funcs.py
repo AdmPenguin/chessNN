@@ -368,14 +368,14 @@ def checkValid(board, move, doPrint=False):
                         if doPrint:
                             print("Queenside rook moved, no castling.")
                         return False, board
-                    if board[56] != 0 or board[57] != 0 or board[58] != 0:
+                    if board[58] != 0 or board[59] != 0 or board[60] != 0:
                         if doPrint:
                             print("Pieces in the way for queenside castling.")
                         return False, board
                     # Move pieces for castling
-                    newBoard[60] = 0
-                    newBoard[58] = 6
-                    newBoard[57] = 4
+                    newBoard[57] = 0
+                    newBoard[59] = 6
+                    newBoard[60] = 4
                     newBoard[67] = 0
                     newBoard[66] = 0
                 elif xDist == 2:
@@ -384,13 +384,13 @@ def checkValid(board, move, doPrint=False):
                         if doPrint:
                             print("Kingside rook moved, no castling.")
                         return False, board
-                    if board[61] != 0 or board[62] != 0:
+                    if board[62] != 0 or board[63] != 0:
                         if doPrint:
                             print("Pieces in the way for kingside castling.")
                         return False, board
-                    newBoard[60] = 0
-                    newBoard[62] = 6
-                    newBoard[63] = 4
+                    newBoard[64] = 0
+                    newBoard[63] = 6
+                    newBoard[62] = 4
                     newBoard[68] = 0
                     newBoard[66] = 0
                 else:
@@ -409,13 +409,13 @@ def checkValid(board, move, doPrint=False):
                         if doPrint:
                             print("Queenside rook moved, no castling.")
                         return False, board
-                    if board[0] != 0 or board[1] != 0 or board[2] != 0:
+                    if board[2] != 0 or board[3] != 0 or board[4] != 0:
                         if doPrint:
                             print("Pieces in the way for queenside castling.")
                         return False, board
-                    newBoard[4] = 0
-                    newBoard[2] = -6
-                    newBoard[3] = -4
+                    newBoard[1] = 0
+                    newBoard[3] = -6
+                    newBoard[4] = -4
                     newBoard[70] = 0
                     newBoard[69] = 0
                 elif xDist == 2:
@@ -428,9 +428,9 @@ def checkValid(board, move, doPrint=False):
                         if doPrint:
                             print("Pieces in the way for kingside castling.")
                         return False, board
-                    newBoard[4] = 0
-                    newBoard[6] = -6
-                    newBoard[5] = -4
+                    newBoard[8] = 0
+                    newBoard[7] = -6
+                    newBoard[6] = -4
                     newBoard[71] = 0
                     newBoard[69] = 0
                 else:

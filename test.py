@@ -1,5 +1,6 @@
 import model as m
 import chess_funcs as cf
+import data_setup as ds
 
 import torch
 
@@ -13,7 +14,7 @@ def get_model_move(model, board_tensor):
     return predicted
 
 # Allows you to play against the model
-def main():
+def game():
     # Load board
     board = cf.STANDARD_BOARD.copy()
 
@@ -82,7 +83,7 @@ def main():
                 break
 
 # Variant where the model has no validity check
-def main_nocheck():
+def game_nocheck():
     # Load board
     board = cf.STANDARD_BOARD.copy()
 
@@ -149,9 +150,33 @@ def main_nocheck():
 
             cf.printBoard(board)
 
+def randomMove():
+    # Load model
+    model = m.ChessMovePredictor()
+    model.load_state_dict(torch.load(MODEL, weights_only=True, map_location="cpu"))
+    model.eval()
+
+    testData = ds.sample_games(ds.FILE, 50, 1)
+
+    for board in testData:
+        cf.printBoard(board)
+        board_tensor = torch.tensor(board, dtype=torch.float32)
+        move = get_model_move(model, board_tensor)
+        print(move)
+        try:
+            valid = cf.checkValid(board, move)[0]
+            if valid:
+                cf.printBoard(board)
+            else:
+                print("Invalid move.")
+        except:
+            print("Invalid move.")
+
 if __name__ == "__main__":
     mode = input("Mode: ")
     if mode == "1":
-        main()
-    if mode == "2":
-        main_nocheck()
+        game()
+    elif mode == "2":
+        game_nocheck()
+    elif mode == "3":
+        randomMove()

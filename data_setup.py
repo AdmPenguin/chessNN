@@ -106,7 +106,8 @@ def move_to_label(move):
     y_to, x_to = square_to_coords(to_sq)
     return [y_from, x_from, y_to, x_to]
 
-def load_training_pairs_from_games(pgn_file_path, convertModuletoArray, n = 100):
+def load_training_pairs_from_games(pgn_file_path, convertModuletoArray, n = 100, seed = 420):
+    random.seed(seed)
     training_pairs = []
 
     with open(pgn_file_path) as pgn_file:
